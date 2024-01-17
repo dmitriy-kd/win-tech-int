@@ -5,7 +5,6 @@ then
   chmod -R 0750 /var/www/txt-mgc-int/docker/postgres/data
   /usr/local/bin/composer install
   /var/www/txt-mgc-int/bin/console doctrine:migrations:migrate --no-interaction
-  /var/www/txt-mgc-int/bin/console app:fill-data-test
 else
   set -e
 fi

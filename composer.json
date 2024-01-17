@@ -80,5 +80,8 @@
     "runtime": {
       "dotenv_overload": true
     }
+  },
+  "require-dev": {
+    "symfony/maker-bundle": "^1.50"
   }
 }
