@@ -30,6 +30,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Wallet::class)]
+    private ?Wallet $wallet = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->username = $username;
 
         return $this;
+    }
+
+    public function getWallet(): ?Wallet
+    {
+        return $this->wallet;
     }
 
     /**

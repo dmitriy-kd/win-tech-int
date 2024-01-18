@@ -1,0 +1,5 @@
+App\Entity\Wallet:
+  attributes:
+    balance:
+      groups:
+        - api-wallet-get-balance
