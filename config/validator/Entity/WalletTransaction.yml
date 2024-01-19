@@ -1,0 +1,6 @@
+App\Entity\WalletTransaction:
+  attributes:
+    amount:
+      - Symfony\Component\Validator\Constraints\Sequentially:
+          - NotBlank: ~
+          - PositiveOrZero: ~

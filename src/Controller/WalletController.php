@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Wallet;
+use App\Entity\WalletTransaction;
 use App\Form\Type\CreateWalletType;
+use App\Form\Type\WalletTransactionType;
 use App\Service\Helper\FormErrorsHelper;
+use App\Service\Wallet\WalletUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +21,8 @@ class WalletController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly FormErrorsHelper $formErrorsHelper
+        private readonly FormErrorsHelper $formErrorsHelper,
+        private readonly WalletUpdater $walletUpdater
     ) {}
 
     #[Route(
@@ -71,5 +75,34 @@ class WalletController extends AbstractController
             $wallet,
             context: [AbstractNormalizer::GROUPS => ['api-wallet-get-balance']]
         );
+    }
+
+    #[Route(
+        '/api/wallet/{id}/balance',
+        name: 'api_wallet_update_balance',
+        requirements: ['id' => '\d+'],
+        methods: ['POST']
+    )]
+    public function updateBalance(Request $request, Wallet $wallet): Response
+    {
+        $walletTransaction = new WalletTransaction($wallet);
+
+        $form = $this->createForm(WalletTransactionType::class, $walletTransaction)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $walletTransaction->setAmount(
+                $walletTransaction->getAmount() * 100
+            );
+
+            $this->em->persist($walletTransaction);
+            $this->em->flush();
+
+            $this->walletUpdater->updateBalance($walletTransaction, $wallet);
+        }
+
+        $errors = $this->formErrorsHelper->prepareApiErrors($form);
+
+        return new JsonResponse(['errors' => $errors], Response::HTTP_BAD_REQUEST);
     }
 }

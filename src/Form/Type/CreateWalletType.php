@@ -4,11 +4,10 @@ namespace App\Form\Type;
 
 use App\Entity\Wallet;
 use App\Enum\CurrencyEnum;
+use App\EventSubscriber\FormatStringSubscriber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CreateWalletType extends AbstractType
@@ -18,10 +17,7 @@ class CreateWalletType extends AbstractType
         $builder->add('currency', EnumType::class, ['class' => CurrencyEnum::class]);
 
         $builder->get('currency')
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-                $currency = $event->getData();
-                $event->setData(strtolower($currency));
-            });
+            ->addEventSubscriber(new FormatStringSubscriber());
     }
 
     public function configureOptions(OptionsResolver $resolver): void
