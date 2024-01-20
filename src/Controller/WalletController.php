@@ -99,6 +99,8 @@ class WalletController extends AbstractController
             $this->em->flush();
 
             $this->walletUpdater->updateBalance($walletTransaction, $wallet);
+
+            return new JsonResponse(['success' => true]);
         }
 
         $errors = $this->formErrorsHelper->prepareApiErrors($form);
