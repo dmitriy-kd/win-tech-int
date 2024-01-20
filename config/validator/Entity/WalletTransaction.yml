@@ -1,4 +1,6 @@
 App\Entity\WalletTransaction:
+  constraints:
+    - App\Validator\Constraint\WalletTransactionAmountConstraint: ~
   attributes:
     amount:
       - Symfony\Component\Validator\Constraints\Sequentially:
