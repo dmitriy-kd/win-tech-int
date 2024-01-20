@@ -47,7 +47,11 @@ class Wallet
 
     public function getBalance(): int
     {
-        return $this->balance > 0 ?? $this->balance / 100;
+        if ($this->balance > 0) {
+            return $this->balance / 100;
+        }
+
+        return $this->balance;
     }
 
     public function setBalance(int $balance): Wallet

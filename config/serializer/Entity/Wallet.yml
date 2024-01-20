@@ -3,3 +3,6 @@ App\Entity\Wallet:
     balance:
       groups:
         - api-wallet-get-balance
+    currency:
+      groups:
+        - api-wallet-get-balance
