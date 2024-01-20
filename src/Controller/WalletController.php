@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
@@ -22,7 +23,8 @@ class WalletController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly FormErrorsHelper $formErrorsHelper,
-        private readonly WalletUpdater $walletUpdater
+        private readonly WalletUpdater $walletUpdater,
+        private readonly LockFactory $lockFactory
     ) {}
 
     #[Route(
@@ -87,6 +89,12 @@ class WalletController extends AbstractController
     )]
     public function updateBalance(Request $request, Wallet $wallet): Response
     {
+        $lock = $this->lockFactory->createLock(
+            sprintf('update-wallet-balance-%d', $wallet->getId())
+        );
+
+        $lock->acquire(true);
+
         $walletTransaction = new WalletTransaction($wallet);
 
         $form = $this->createForm(WalletTransactionType::class, $walletTransaction)
@@ -100,11 +108,15 @@ class WalletController extends AbstractController
 
             $wallet->setBalance($wallet->getFormattedBalance());
 
+            $lock->release();
+
             return $this->json(
                 $wallet,
                 context: [AbstractNormalizer::GROUPS => ['api-wallet-get-balance']]
             );
         }
+
+        $lock->release();
 
         $errors = $this->formErrorsHelper->prepareApiErrors($form);
 
