@@ -71,6 +71,8 @@ class WalletController extends AbstractController
     )]
     public function getBalance(Wallet $wallet): Response
     {
+        $wallet->setBalance($wallet->getFormattedBalance());
+
         return $this->json(
             $wallet,
             context: [AbstractNormalizer::GROUPS => ['api-wallet-get-balance']]
@@ -91,16 +93,17 @@ class WalletController extends AbstractController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $walletTransaction->setAmount(
-                $walletTransaction->getAmount() * 100
-            );
-
             $this->em->persist($walletTransaction);
             $this->em->flush();
 
             $this->walletUpdater->updateBalance($walletTransaction, $wallet);
 
-            return new JsonResponse(['success' => true]);
+            $wallet->setBalance($wallet->getFormattedBalance());
+
+            return $this->json(
+                $wallet,
+                context: [AbstractNormalizer::GROUPS => ['api-wallet-get-balance']]
+            );
         }
 
         $errors = $this->formErrorsHelper->prepareApiErrors($form);

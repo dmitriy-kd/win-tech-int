@@ -26,12 +26,12 @@ class WalletTransactionAmountConstraintValidator extends ConstraintValidator
                 $amount = $this->amountConverter->convert(
                     $walletTransaction->getCurrency(),
                     $wallet->getCurrency(),
-                    $amount * 100
+                    $amount
                 );
+            }
 
-                if ($wallet->getBalance() < $amount) {
-                    $this->context->addViolation('Refund transaction amount cannot be greater than wallet balance');
-                }
+            if ($wallet->getBalance() < $amount) {
+                $this->context->addViolation('Refund transaction amount cannot be greater than wallet balance');
             }
         }
     }

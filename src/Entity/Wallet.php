@@ -45,12 +45,17 @@ class Wallet
         return $this->user;
     }
 
-    public function getBalance(): int
+    public function getFormattedBalance(): int
     {
         if ($this->balance > 0) {
             return $this->balance / 100;
         }
 
+        return $this->balance;
+    }
+
+    public function getBalance(): int
+    {
         return $this->balance;
     }
 

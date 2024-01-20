@@ -66,7 +66,7 @@ class WalletTransaction
 
     public function setAmount(int $amount): WalletTransaction
     {
-        $this->amount = $amount;
+        $this->amount = $amount * 100;
 
         return $this;
     }
