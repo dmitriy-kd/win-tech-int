@@ -90,12 +90,4 @@ class UserController extends AbstractController
 
         return new JsonResponse(['errors' => $errors], Response::HTTP_BAD_REQUEST);
     }
-
-    #[Route(
-        '/api/test',
-    )]
-    public function test()
-    {
-        return new Response();
-    }
 }
