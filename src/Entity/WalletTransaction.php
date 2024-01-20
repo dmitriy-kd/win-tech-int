@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\CurrencyEnum;
 use App\Enum\WalletTransactionReasonEnum;
 use App\Enum\WalletTransactionTypeEnum;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\WalletTransactionRepository;
 
@@ -32,9 +33,13 @@ class WalletTransaction
     #[ORM\Column(enumType: WalletTransactionReasonEnum::class)]
     private ?WalletTransactionReasonEnum $reason = null;
 
+    #[ORM\Column]
+    private DateTime $createdAt;
+
     public function __construct(Wallet $wallet)
     {
         $this->wallet = $wallet;
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -93,5 +98,10 @@ class WalletTransaction
         $this->reason = $reason;
 
         return $this;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
     }
 }

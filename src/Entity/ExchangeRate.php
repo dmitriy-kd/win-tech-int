@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Enum\CurrencyEnum;
 use App\Repository\ExchangeRateRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class ExchangeRate
 {
     #[ORM\Id]
@@ -20,11 +22,21 @@ class ExchangeRate
     #[ORM\Column]
     private int $rate;
 
+    #[ORM\Column]
+    private DateTime $updatedAt;
+
     public function __construct(CurrencyEnum $currencyFrom, CurrencyEnum $currencyTo, int $rate)
     {
         $this->currencyFrom = $currencyFrom;
         $this->currencyTo = $currencyTo;
         $this->rate = $rate;
+        $this->updatedAt = new DateTime();
+    }
+
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->updatedAt = new DateTime();
     }
 
     public function getCurrencyFrom(): CurrencyEnum
@@ -47,5 +59,10 @@ class ExchangeRate
         $this->rate = $rate;
 
         return $this;
+    }
+
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
     }
 }
